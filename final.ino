@@ -119,7 +119,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 int clockcounter=0;
 int ledstate=1;
 int buttonpressedstate=1;
-
+int loopcounter=0;
 
 void setup(){
   
@@ -165,14 +165,31 @@ void loop() {
     }
 
 
+    //change led mode
     if (digitalRead(14) == LOW ){
       buttonpressedstate=0;
     }else if (digitalRead(14) == HIGH && buttonpressedstate==0){
       buttonpressedstate=1;
-      changeled();
+      if(ledstate==4){
+        ledstate=1;
+      }else{
+        ledstate++;
+      }
     }
+
+  //led mode
+  if(ledstate==1){
+    ledmode1();
+  }else if(ledstate==2){
+    ledmode2();
+  }else if(ledstate==3){
+    ledmode3();
+  }else if(loopcounter==4){
+    ledmode4(loopcounter);
+  }
  
    delay(250);
+   loopcounter++;
 }
 
 void updatediaplay(int gethour,int getminute,int getday){
@@ -225,6 +242,26 @@ void ledmode3(){
   pixels.setPixelColor(0, pixels.Color(0,0,20)); // Moderately bright green color.
   for(int i=1;i<NUMPIXELS;i++){
     pixels.setPixelColor(i, pixels.Color(70,70,70)); // Moderately bright green color.
+  }
+  pixels.show();
+}
+
+void ledmode4(int countertemp){
+  pixels.setPixelColor(0, pixels.Color(random(0,255),random(0,255),random(0,255))); 
+  for(int i=1;i<NUMPIXELS;i++){
+    if(countertemp%2==1){
+      if(i%2==1){
+        pixels.setPixelColor(i, pixels.Color(random(0,255),random(0,255),random(0,255)));
+      }else{
+        pixels.setPixelColor(i, pixels.Color(0,0,0,0));
+      }
+    }else{
+      if(i%2==0){
+        pixels.setPixelColor(i, pixels.Color(random(0,255),random(0,255),random(0,255)));
+      }else{
+        pixels.setPixelColor(i, pixels.Color(0,0,0,0));
+      }
+    }
   }
   pixels.show();
 }
